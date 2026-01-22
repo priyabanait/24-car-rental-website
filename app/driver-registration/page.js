@@ -121,37 +121,71 @@ export default function DriverRegistration() {
     }
   };
 
-  const getCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          setFormData(prev => ({ ...prev, latitude: latitude.toString(), longitude: longitude.toString() }));
-          
-          try {
-            const response = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-            );
-            const data = await response.json();
-            if (data && data.address) {
-              setFormData(prev => ({
-                ...prev,
-                address: data.display_name || '',
-                city: data.address.city || data.address.town || '',
-                state: data.address.state || '',
-                pincode: data.address.postcode || ''
-              }));
+const getCurrentLocation = () => {
+  if (!navigator.geolocation) {
+    alert('Geolocation not supported');
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    async (position) => {
+      const { latitude, longitude, accuracy } = position.coords;
+
+      console.log('GPS accuracy (meters):', accuracy);
+
+      // Save lat/lng
+      setFormData(prev => ({
+        ...prev,
+        latitude: latitude.toString(),
+        longitude: longitude.toString()
+      }));
+
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1&accept-language=en`,
+          {
+            headers: {
+              'User-Agent': 'IndiaWebApp/1.0 (support@yourdomain.com)'
             }
-          } catch (err) {
-            console.error('Geocoding error:', err);
           }
-        },
-        (error) => {
-          alert('Unable to get location. Please enter manually.');
+        );
+
+        const data = await response.json();
+
+        if (data?.address) {
+          const a = data.address;
+
+          setFormData(prev => ({
+            ...prev,
+            address: data.display_name || '',
+            city:
+              a.city ||
+              a.town ||
+              a.village ||
+              a.suburb ||
+              a.municipality ||
+              a.county ||      // India districts
+              '',
+            state: a.state || '',
+            pincode: a.postcode || ''
+          }));
         }
-      );
+      } catch (err) {
+        console.error('Geocoding error:', err);
+      }
+    },
+    (error) => {
+      console.error(error);
+      alert('Location access denied or unavailable');
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
     }
-  };
+  );
+};
+
 
   const handleNext = () => {
     // Validate current step
@@ -469,7 +503,7 @@ export default function DriverRegistration() {
                 {errors.panNumber && <p className="mt-1 text-sm text-red-600">{errors.panNumber}</p>}
               </div>
 
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Electric Bill Number</label>
                 <input
                   type="text"
@@ -478,7 +512,7 @@ export default function DriverRegistration() {
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500"
                   placeholder="Bill number"
                 />
-              </div>
+              </div> */}
             </div>
 
             <div className="space-y-4">
@@ -490,7 +524,7 @@ export default function DriverRegistration() {
                   { key: 'aadharDocument', label: 'Aadhar Front' },
                   { key: 'aadharDocumentBack', label: 'Aadhar Back' },
                   { key: 'panDocument', label: 'PAN Card' },
-                  { key: 'electricBillDocument', label: 'Electric Bill' }
+                  // { key: 'electricBillDocument', label: 'Electric Bill' }
                 ].map(({ key, label }) => (
                   <div key={key} className="border-2 border-dashed border-gray-300 rounded-lg p-4 text-center hover:border-green-500 transition">
                     {documentPreviews[key] ? (

@@ -39,15 +39,13 @@ export default function Header() {
     onClick={() => router.push('/')}
   >
     <Image
-      src="/WhatsApp Image 2025-12-15 at 4.36.20 PM.jpeg"   // put your image in /public
+      src="/24carlogo.png"   // put your image in /public
       alt="Car Rental Logo"
-      width={40}
+      width={80}
       height={40}
       className="object-contain"
     />
-    <span className="ml-2 text-2xl font-bold text-green-600">
-      24-Car Rental
-    </span>
+   
   </div>
 </div>
           

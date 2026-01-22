@@ -187,7 +187,7 @@ function PaymentContent() {
           <div className="lg:col-span-2 space-y-6">
             {/* Payment Methods */}
             <div className="bg-white rounded-xl shadow-md p-6">
-              <h2 className="text-xl font-bold text-gray-900 mb-6">Select a Payment method</h2>
+              <h2 className="lg:text-xl text-lg font-semibold text-gray-900 mb-6">Select a Payment method</h2>
 
               <div className="space-y-3 mb-8">
                 {/* UPI */}
@@ -349,7 +349,7 @@ function PaymentContent() {
 
                   <button
                     onClick={handlePayment}
-                    className="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-lg transition-colors"
+                    className="w-full mt-6 cursor-pointer bg-green-600 hover:bg-green-700 text-white text-sm font-semibold py-4 rounded-lg transition-colors"
                   >
                     PAY ₹{bookingDetails.finalAmount.toLocaleString()}
                   </button>
@@ -437,7 +437,7 @@ function PaymentContent() {
               <div className="bg-gray-50 rounded-lg p-4">
                 <div className="flex justify-between items-center">
                   <span className="font-semibold text-gray-900">Final Amount</span>
-                  <span className="text-2xl font-bold text-gray-900">
+                  <span className=" text-lg font-semibold text-gray-900">
                     ₹{bookingDetails.finalAmount.toLocaleString()}
                   </span>
                 </div>

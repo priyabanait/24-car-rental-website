@@ -125,6 +125,22 @@ function Page() {
           } else if (data.vehicles && Array.isArray(data.vehicles)) {
             vehiclesArray = data.vehicles;
           }
+
+          // Exclude vehicles that are currently booked (pending/confirmed/ongoing)
+          try {
+            const bookingsRes = await fetch(`${API_BASE}/api/bookings?status=pending,confirmed,ongoing&all=true&limit=1000`);
+            if (bookingsRes.ok) {
+              const bookingsJson = await bookingsRes.json();
+              const bookingsList = bookingsJson.bookings || bookingsJson.data || bookingsJson || [];
+              const bookedVehicleIds = new Set((bookingsList || []).map(b => String(b.vehicleId?._id || b.vehicleId)));
+              if (bookedVehicleIds.size > 0) {
+                vehiclesArray = vehiclesArray.filter(v => !bookedVehicleIds.has(String(v._id)));
+              }
+            }
+          } catch (err) {
+            console.error('Failed to fetch bookings to filter vehicles:', err);
+          }
+
           setVehicles(vehiclesArray);
         } else {
           console.error('Failed to fetch vehicles:', res.status, res.statusText);
@@ -188,306 +204,191 @@ function Page() {
     // Navigate to cars page with search params
     router.push(`/cars?${params.toString()}`);
   };
+  useEffect(() => {
+  const today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
+  setFormData(prev => ({ ...prev, tripStart: today }));
+}, []);
 
   return (
     <div className="min-h-screen bg-white">
       <Header />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-400 overflow-hidden">
-        {/* White Dots Pattern */}
-        <div className="absolute inset-0" style={{
-          backgroundImage: `radial-gradient(circle, white 1.5px, transparent 1.5px)`,
-          backgroundSize: '30px 30px',
-          opacity: 0.4
-        }}></div>
-        
-        <div className="max-w-7xl px-4 py-12 md:py-16 relative z-10 lg:ml-20">
-         <div className="grid lg:grid-cols-2 gap-8 lg:gap-60 items-center">
-            {/* Left Side - Booking Form */}
-            <div className="order-2 lg:order-1">
-              <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
-                {/* Tabs */}
-                {/* <div className="flex border-b border-gray-200 mb-6">
-                  <button 
-                    onClick={() => setActiveTab('daily')}
-                    className={`flex-1 pb-4 text-center font-semibold transition-all relative ${
-                      activeTab === 'daily' 
-                        ? 'text-teal-700' 
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    <div className="text-sm md:text-base">Daily Drives</div>
-                    <div className="text-xs text-gray-500">Upto 7 days</div>
-                    {activeTab === 'daily' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-700"></div>}
-                  </button>
-                  <button 
-                    ononSubmit={handleSearch} Click={() => setActiveTab('subscription')}
-                    className={`flex-1 pb-4 text-center font-semibold transition-all relative ${
-                      activeTab === 'subscription' 
-                        ? 'text-teal-700' 
-                        : 'text-gray-500 hover:text-gray-700'
-                    }`}
-                  >
-                    <div className="text-sm md:text-base flex items-center justify-center gap-2">
-                      Subscription 
-                      <span className="bg-red-500 text-white text-xs px-2 py-0.5 rounded-sm">New</span>
-                    </div>
-                    <div className="text-xs text-gray-500">7 day+ rides</div>
-                    {activeTab === 'subscription' && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-700"></div>}
-                  </button>
-                </div> */}
-                
-                {/* Form Header */}
-                <div className="mb-6">
-                  <p className="text-sm text-gray-600 mb-2">Looking for Best Car Rentals?</p>
-                  <h2 className="text-xl lg:text-2xl font-bold text-gray-900">
-                    Book Self-Drive Car Rentals Across India
-                  </h2>
-                </div>
+    <section className="relative bg-gradient-to-br from-yellow-300 via-yellow-400 to-orange-400 overflow-hidden">
+  {/* White Dots Pattern */}
+  <div
+    className="absolute inset-0"
+    style={{
+      backgroundImage: `radial-gradient(circle, white 1.5px, transparent 1.5px)`,
+      backgroundSize: "30px 30px",
+      opacity: 0.4,
+    }}
+  />
 
-                {/* Form */}
-                <form onSubmit={handleSearch} className="space-y-2">
-                  {/* City */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
-                    <select 
-                      className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500 bg-white text-gray-900"
-                      value={formData.city}
-                      onChange={(e) => setFormData({...formData, city: e.target.value})}
-                      disabled={loadingCities}
-                    >
-                      {loadingCities ? (
-                        <option>Loading cities...</option>
-                      ) : cities.length === 0 ? (
-                        <option>No cities available</option>
-                      ) : (
-                        <>
-                          <option value="">Select a city</option>
-                          {cities.map((city) => (
-                            <option key={city._id} value={city.name}>
-                              {city.name}, {city.state}
-                            </option>
-                          ))}
-                        </>
-                      )}
-                    </select>
-                  </div>
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 lg:py-20 relative z-10">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-24 items-center">
 
-                  {/* Location */}
-                  <div className="relative">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Location</label>
-                    <div className="flex gap-2">
-                      <div className="flex-1 relative">
-                        <input 
-                          type="text"
-                          placeholder={cityAddresses.length > 0 ? "Click to select address or enter manually" : "Enter your location or use current location"}
-                          className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-                          value={formData.location}
-                          onChange={(e) => setFormData({...formData, location: e.target.value})}
-                          onFocus={() => cityAddresses.length > 0 && setShowAddresses(true)}
-                          onBlur={() => setTimeout(() => setShowAddresses(false), 200)}
-                        />
-                        
-                        {/* Address Dropdown */}
-                        {showAddresses && cityAddresses.length > 0 && (
-                          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-y-auto">
-                            {cityAddresses.map((addr, index) => (
-                              <div
-                                key={index}
-                                onClick={() => {
-                                  setFormData({...formData, location: addr.address});
-                                  setShowAddresses(false);
-                                }}
-                                className="px-4 py-3 hover:bg-teal-50 cursor-pointer border-b border-gray-100 last:border-b-0"
-                              >
-                                <div className="flex items-start gap-2">
-                                  {addr.isPrimary && (
-                                    <span className="text-green-600 font-semibold text-sm mt-0.5">★</span>
-                                  )}
-                                  <div className="flex-1">
-                                    {addr.label && (
-                                      <div className="text-xs font-semibold text-gray-700 mb-1">
-                                        {addr.label}
-                                        {addr.isPrimary && <span className="text-green-600 ml-1">(Primary)</span>}
-                                      </div>
-                                    )}
-                                    <div className="text-sm text-gray-900">{addr.address}</div>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                      {/* <button
-                        type="button"
-                        onClick={getCurrentLocation}
-                        disabled={fetchingLocation}
-                        className="px-4 py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-md transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2"
-                        title="Use current location"
-                      >
-                        {fetchingLocation ? (
-                          <span className="animate-spin">⏳</span>
-                        ) : (
-                          <span>📍</span>
-                        )}
-                      </button> */}
-                    </div>
-                  </div>
+      {/* LEFT — BOOKING FORM */}
+      <div className="order-2 lg:order-1">
+        <div className="bg-white rounded-2xl shadow-xl p-5 sm:p-6 md:p-8">
 
-                  {/* Trip Dates */}
-                 <div className="grid grid-cols-2 gap-4">
-  {/* Trip Start Date */}
+          {/* Header */}
+          <div className="mb-6">
+            <p className="text-sm text-gray-600 mb-2">
+              Looking for Best Car Rentals?
+            </p>
+            <h2 className="text-lg md:text-xl font-semibold text-gray-900">
+              Book Self-Drive Car Rentals Across India
+            </h2>
+          </div>
+
+          {/* Form */}
+         <form onSubmit={handleSearch} className="space-y-4">
+
+  {/* City */}
   <div>
     <label className="block text-sm font-medium text-gray-700 mb-2">
-      Trip Start Date
+      City
     </label>
-    <input
-      type="date"
-      className="w-full px-4 py-3 border border-gray-300 rounded-md 
-                 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-      value={formData.tripStart}
-      min={new Date().toISOString().split("T")[0]}
+    <select
+      className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+      value={formData.city}
       onChange={(e) =>
-        setFormData({
-          ...formData,
-          tripStart: e.target.value,
-          tripEnd: "" // reset end date when start changes
-        })
+        setFormData({ ...formData, city: e.target.value })
       }
-    />
+      disabled={loadingCities}
+    >
+      <option value="">Select City</option>
+
+      {[...cities] /* 👈 ONLY CHANGE */
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((city) => (
+          <option key={city._id} value={city.name}>
+            {city.name}, {city.state}
+          </option>
+        ))}
+    </select>
   </div>
 
-  {/* Trip End Date */}
-  {/* <div>
+  {/* Location */}
+  <div>
     <label className="block text-sm font-medium text-gray-700 mb-2">
-      Trip End Date
+      Location
     </label>
     <input
-      type="date"
-      className="w-full px-4 py-3 border border-gray-300 rounded-md 
-                 focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
-      value={formData.tripEnd}
-      min={formData.tripStart || new Date().toISOString().split("T")[0]}
-      disabled={!formData.tripStart}
+      type="text"
+      placeholder="Enter pickup location"
+      className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+      value={formData.location}
       onChange={(e) =>
-        setFormData({
-          ...formData,
-          tripEnd: e.target.value
-        })
+        setFormData({ ...formData, location: e.target.value })
       }
     />
-  </div> */}
-</div>
-
-
-                  {/* Delivery Checkbox */}
-                  {/* <div className="flex items-center">
-                    <input 
-                      type="checkbox"
-                      id="delivery"
-                      className="w-4 h-4 text-teal-600 border-gray-300 rounded focus:ring-teal-500"
-                      checked={formData.delivery}
-                      onChange={(e) => setFormData({...formData, delivery: e.target.checked})}
-                    />
-                    <label htmlFor="delivery" className="ml-2 text-sm text-gray-700">
-                      Delivery & Pick-up, from anywhere
-                    </label>
-                  </div> */}
-
-                  {/* Search Button */}
-                  <button 
-                    type="submit"
-                    className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3.5 rounded-md transition-colors duration-200"
-                  >
-                    SEARCH
-                  </button>
-                </form>
-              </div>
-            </div>
-
-            {/* Right Side - Hero Text */}
-            <div className="order-1 lg:order-2 text-center lg:text-left">
-              {/* Badge */}
-              <div className="inline-block mb-6">
-                <div className="bg-white/20 backdrop-blur-sm border border-white/40 rounded-full px-4 py-2 flex items-center gap-2">
-                  <span className="text-white text-sm font-semibold">⚡ #1 Self-Drive Platform</span>
-                </div>
-              </div>
-
-              {/* Main Heading */}
-            <h1 className="flex items-center gap-6 md:gap-10 text-white mb-6">
-  {/* LEFT SIDE */}
-  <div className="text-5xl md:text-6xl lg:text-7xl font-black">
-    DRIVE
   </div>
 
-  {/* RIGHT SIDE */}
-  <div className="flex flex-col">
-    <div className="text-2xl lg:text-5xl font-black bg-gradient-to-r from-white to-yellow-50 bg-clip-text text-transparent">
-      ANYTIME
-    </div>
-
-    <div className="my-3">
-      <div className="border-t-4 border-dashed border-white/60 w-32 lg:w-78"></div>
-    </div>
-
-    <div className="text-2xl lg:text-5xl font-black">
-      ANYWHERE
+  {/* Dates */}
+  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <div>
+      <label className="block text-sm font-medium text-gray-700 mb-2">
+        Trip Start Date
+      </label>
+      <input
+        type="date"
+        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+        value={formData.tripStart}
+        onChange={(e) =>
+          setFormData({
+            ...formData,
+            tripStart: e.target.value,
+          })
+        }
+      />
     </div>
   </div>
-</h1>
 
-              {/* Slogan */}
-              <p className="text-xl md:text-2xl text-gray-800 font-semibold mb-4">
-                Your Journey, Your Freedom, Your Car
-              </p>
-              
-              {/* Description */}
-              <p className="text-base md:text-lg text-gray-700 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
-                Experience the freedom of self-drive with unlimited options, zero commitment, and seamless booking. Your road to adventure starts here!
-              </p>
+  {/* Button */}
+  <button
+    type="submit"
+    className="w-full text-sm cursor-pointer bg-green-600 hover:bg-green-700 text-white font-semibold py-3.5 rounded-md transition"
+  >
+    SEARCH
+  </button>
 
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 max-w-lg mx-auto lg:mx-0">
-                <div className="bg-white/90 backdrop-blur-sm rounded-md p-4 text-center transform hover:scale-105 transition-transform shadow-lg">
-                  <div className="text-2xl md:text-3xl font-black text-orange-600">500+</div>
-                  <div className="text-xs md:text-sm text-gray-600 font-medium">Premium Cars</div>
-                </div>
-                <div className="bg-white/90 backdrop-blur-sm rounded-md p-4 text-center transform hover:scale-105 transition-transform shadow-lg">
-                  <div className="text-2xl md:text-3xl font-black text-orange-600">50k+</div>
-                  <div className="text-xs md:text-sm text-gray-600 font-medium">Happy Drivers</div>
-                </div>
-                <div className="bg-white/90 backdrop-blur-sm rounded-md p-4 text-center transform hover:scale-105 transition-transform shadow-lg">
-                  <div className="text-2xl md:text-3xl font-black text-orange-600">25+</div>
-                  <div className="text-xs md:text-sm text-gray-600 font-medium">Cities</div>
-                </div>
-              </div>
+</form>
 
-              {/* Car Illustration */}
-              <div className="mt-10 relative">
-                <div className="flex justify-center lg:justify-start items-end space-x-4">
-                  <div className="transform hover:scale-110 transition-transform hover:-translate-y-2 duration-300">
-                    <div className="text-5xl md:text-6xl filter drop-shadow-2xl">🚙</div>
-                  </div>
-                  <div className="transform hover:scale-110 transition-transform hover:-translate-y-2 duration-300">
-                    <div className="text-6xl md:text-7xl filter drop-shadow-2xl">🚗</div>
-                  </div>
-                  <div className="transform hover:scale-110 transition-transform hover:-translate-y-2 duration-300">
-                    <div className="text-5xl md:text-6xl filter drop-shadow-2xl">🚕</div>
-                  </div>
-                </div>
-                {/* Road line effect */}
-                <div className="mt-2 border-b-2 border-dashed border-white/40 w-full"></div>
-              </div>
-            </div>
+        </div>
+      </div>
+
+      {/* RIGHT — HERO CONTENT */}
+      <div className="order-1 lg:order-2 text-center lg:text-left">
+
+        {/* Badge */}
+        <div className="inline-block mb-6">
+          <div className="bg-white/20 backdrop-blur-sm border border-white/40 rounded-full px-4 py-2 text-white text-sm font-semibold">
+            ⚡ #1 Self-Drive Platform
           </div>
         </div>
-      </section>
+
+        {/* Heading */}
+        <h1 className="flex flex-col sm:flex-row items-center sm:items-start gap-4 sm:gap-8 text-white mb-6">
+          <div className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black">
+            DRIVE
+          </div>
+
+          <div className="flex flex-col items-center sm:items-start">
+            <div className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-black bg-gradient-to-r from-white to-yellow-50 bg-clip-text text-transparent">
+              ANYTIME
+            </div>
+
+            <div className="my-2">
+              <div className="border-t-2 sm:border-t-4 border-dashed border-white/60 w-24 sm:w-32"></div>
+            </div>
+
+            <div className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-black">
+              ANYWHERE
+            </div>
+          </div>
+        </h1>
+
+        {/* Description */}
+        <p className="text-base md:text-lg text-gray-800 max-w-xl mx-auto lg:mx-0 mb-8">
+          Experience the freedom of self-drive with seamless booking and zero
+          commitment.
+        </p>
+
+        {/* Stats */}
+        <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 max-w-lg mx-auto lg:mx-0">
+          {[
+            ["500+", "Premium Cars"],
+            ["50k+", "Happy Drivers"],
+            ["25+", "Cities"],
+          ].map(([count, label]) => (
+            <div
+              key={label}
+              className="bg-white/90 rounded-md p-4 text-center shadow-lg"
+            >
+              <div className="text-2xl md:text-3xl font-black text-orange-600">
+                {count}
+              </div>
+              <div className="text-xs md:text-sm text-gray-600 font-medium">
+                {label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Cars */}
+        <div className="mt-10 flex justify-center lg:justify-start gap-6 text-5xl md:text-6xl">
+          🚙 🚗 🚕
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
 
       {/* Features Section */}
-      <section id="features" className="py-20 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
+      <section id="features" className="lg:py-20 py-10 bg-gradient-to-b from-white to-gray-50 relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-5" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3z' fill='%23000000' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E")`
         }}></div>
@@ -531,7 +432,7 @@ function Page() {
       </section>
 
       {/* Top Cars Section */}
-      <section id="cars" className="py-20 bg-gray-50 relative">
+      <section id="cars" className="lg:pt pt-10 bg-gray-50 relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-block bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-full text-sm  mb-4">
@@ -584,7 +485,7 @@ function Page() {
       <div className="p-6">
         {/* Title */}
         <div className="mb-4">
-          <h3 className="text-lg font-semibold text-gray-900 leading-tight">
+          <h3 className="lg:text-lg text-base font-semibold text-gray-900 leading-tight">
             {car.brand} {car.model}
           </h3>
           <p className="text-sm text-gray-500">
@@ -623,14 +524,14 @@ function Page() {
             <p className="text-xs text-gray-500 uppercase tracking-wide">
               Price per day
             </p>
-            <p className="text-2xl font-bold text-gray-900">
+            <p className="lg:text-lg text-base font-semibold text-gray-900">
               ₹{car.pricePerDay || car.price || "N/A"}
             </p>
           </div>
 
           <button
             onClick={() => router.push(`/cars?city=Bangalore`)}
-            className="bg-[#171717] text-white px-6 py-3 rounded-xl text-sm font-semibold transition active:scale-95"
+            className="bg-[#171717] cursor-pointer text-white px-6 py-3 rounded-xl text-sm font-semibold transition active:scale-95"
           >
             Book Now
           </button>
@@ -647,13 +548,13 @@ function Page() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+      <section className="lg:pt-20 pt-10 lg:pb-20 pb-10 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-2 rounded-full text-sm mb-4">
               TESTIMONIALS
             </span>
-            <h2 className="text-xl lg:text-3xl  text-gray-800 mb-4">
+            <h2 className="text-xl lg:text-3xl  text-gray-800 ">
               What Our <span className="bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">Customers Say</span>
             </h2>
           </div>

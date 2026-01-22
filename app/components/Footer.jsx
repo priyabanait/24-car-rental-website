@@ -15,9 +15,9 @@ export default function Footer() {
                  onClick={() => router.push('/')}
                >
                  <Image
-                   src="/WhatsApp Image 2025-12-15 at 4.36.20 PM.jpeg"   // put your image in /public
+                   src="/24carlogo.png"   // put your image in /public
                    alt="Car Rental Logo"
-                   width={80}
+                   width={140}
                    height={80}
                    className="object-contain"
                  />

@@ -109,6 +109,31 @@ function CartContent() {
     }
   };
 
+  // When vehicle data is available, fill missing booking fields from URL params or vehicle defaults
+  useEffect(() => {
+    if (!vehicle) return;
+
+    const formatDateForInput = (val) => {
+      if (!val) return '';
+      const d = new Date(val);
+      if (!isNaN(d)) return d.toISOString().split('T')[0];
+      // Fallback: accept already formatted yyyy-mm-dd
+      const isoMatch = String(val).match(/^(\d{4}-\d{2}-\d{2})/);
+      return isoMatch ? isoMatch[1] : '';
+    };
+
+    const tripStartParam = formatDateForInput(searchParams.get('tripStart') || '');
+    const tripEndParam = formatDateForInput(searchParams.get('tripEnd') || '');
+
+    setBookingData(prev => ({
+      ...prev,
+      city: prev.city || searchParams.get('city') || vehicle.city || '',
+      pickupLocation: prev.pickupLocation || searchParams.get('location') || vehicle.location || prev.city || vehicle.city || '',
+      tripStartDate: prev.tripStartDate || tripStartParam || '',
+      tripEndDate: prev.tripEndDate || tripEndParam || ''
+    }));
+  }, [vehicle, searchParams]);
+
   const calculatePricing = () => {
     const startDate = new Date(bookingData.tripStartDate);
     const endDate = bookingData.tripEndDate ? new Date(bookingData.tripEndDate) : new Date(bookingData.tripStartDate);
@@ -216,7 +241,7 @@ function CartContent() {
             <div className="flex items-center gap-4">
              
               <div>
-                <h1 className="text-3xl md:text-4xl  text-gray-800">Your Bookings</h1>
+                <h1 className="lg:text-2xl  text-lg font-semibold text-gray-800">Your Bookings</h1>
                 <p className="text-gray-600 mt-1">Review your booking details</p>
               </div>
             </div>
@@ -228,7 +253,7 @@ function CartContent() {
               {/* Vehicle Cart Item */}
               <div className="bg-white rounded-2xl shadow-xl overflow-hidden border-2 border-gray-100 hover:border-green-200 transition-all">
                 <div className="bg-gradient-to-r from-green-50 to-blue-50 px-6 py-4 border-b">
-                  <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <h2 className="lg:text-xl text-md font-semibold text-gray-800 flex items-center gap-2">
                     Selected Vehicle
                   </h2>
                 </div>
@@ -253,11 +278,11 @@ function CartContent() {
 
     {/* Vehicle Details */}
     <div className="md:w-2/3">
-      <h3 className="text-2xl font-bold text-gray-800 mb-2">
-        {vehicle?.name || `${vehicle?.make} ${vehicle?.model}`}
+      <h3 className="lg:text-2xl text-lg font-semibold text-gray-800 mb-2">
+        {vehicle?.name || `${vehicle?.carName} ${vehicle?.model}`}
       </h3>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-4">
+      <div className="grid grid-cols-3 md:grid-cols-3 gap-3 mb-4">
         <div className="bg-gray-50 rounded-lg p-3 text-center">
           <div className="text-xl mb-1">👥</div>
           <div className="text-xs text-gray-500">Seats</div>
@@ -286,14 +311,14 @@ function CartContent() {
       <div className="flex items-center justify-between bg-green-50 rounded-lg p-4">
         <div>
           <p className="text-sm text-gray-600">Rate per day</p>
-          <p className="text-2xl font-bold text-green-600">
+          <p className="lg:text-2xl text-lg font-semibold text-green-600">
             ₹{pricing.pricePerDay}
           </p>
         </div>
 
         <button
           onClick={() => router.push('/cars')}
-          className="text-red-600 hover:text-red-700 font-semibold text-sm"
+          className="text-red-600 cursor-pointer hover:text-red-700 font-semibold text-sm"
         >
           Remove
         </button>
@@ -306,7 +331,7 @@ function CartContent() {
 
               {/* Booking Details Form */}
               <div className="bg-white rounded-2xl shadow-xl p-6 border-2 border-gray-100">
-                <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <h2 className="lg:text-xl text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
                   <span>📝</span> Booking Details
                 </h2>
                 
@@ -399,7 +424,7 @@ function CartContent() {
             {/* Right Side - Price Summary */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl shadow-xl p-6 sticky top-4 border-2 border-gray-100">
-                <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <h2 className="lg:text-xl text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
                   <span>💰</span> Price Summary
                 </h2>
 
@@ -475,8 +500,8 @@ function CartContent() {
                   )}
                   
                   <div className="border-t-2 border-gray-300 pt-4 flex justify-between items-center">
-                    <span className="text-lg font-bold text-gray-800">Total Amount</span>
-                    <span className="text-2xl font-black text-green-600">₹{pricing.finalAmount}</span>
+                    <span className="lg:text-lg text-base font-semibold text-gray-800">Total Amount</span>
+                    <span className="lg:text-lg text-base font-semibold text-green-600">₹{pricing.finalAmount}</span>
                   </div>
                 </div>
 
@@ -484,7 +509,7 @@ function CartContent() {
                 <button
                   onClick={handleProceedToPayment}
                   disabled={submitting || !bookingData.city || !bookingData.pickupLocation || !bookingData.tripStartDate}
-                  className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
+                  className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white font-semibold py-4 rounded-lg text-sm cursor-pointer transition-all duration-300 shadow-lg hover:shadow-xl disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2 mb-4"
                 >
                   {submitting ? (
                     <>

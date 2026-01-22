@@ -103,6 +103,9 @@ function CarDetailsContent() {
       alert('Please agree to the terms and conditions');
       return;
     }
+
+    // If trip dates are not provided, prompt user to select them
+  
     
     // Check if user is logged in
     const isLoggedIn = localStorage.getItem('isLoggedIn');
@@ -150,43 +153,18 @@ function CarDetailsContent() {
             </div>
             <div>
               <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xs text-gray-500 mb-0.5 sm:mb-1">Checkin</div>
-                  <div className="text-xs sm:text-sm font-medium text-gray-900">
-                    {bookingData.checkIn ? new Date(bookingData.checkIn).toLocaleDateString('en-US', { 
-                      day: 'numeric', 
-                      month: 'short', 
-                      year: '2-digit',
-                      hour: 'numeric',
-                      hour12: true 
-                    }).replace(',', ', ') : 'Select date'}
-                  </div>
-                </div>
+                
                 {/* <button className="text-green-600 text-sm font-medium">Edit</button> */}
               </div>
             </div>
             <div>
-              {/* <div className="flex items-center justify-between">
-                <div>
-                  <div className="text-xs text-gray-500 mb-1">Checkout</div>
-                  <div className="text-sm font-medium text-gray-900">
-                    {bookingData.checkOut ? new Date(bookingData.checkOut).toLocaleDateString('en-US', { 
-                      day: 'numeric', 
-                      month: 'short', 
-                      year: '2-digit',
-                      hour: 'numeric',
-                      hour12: true 
-                    }).replace(',', ', ') : 'Select date'}
-                  </div>
-                </div>
-                <button className="text-green-600 text-sm font-medium">Edit</button>
-              </div> */}
+              
             </div>
           </div>
         </div>
       </div>
 
-      <div className=" mx-auto px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
+      <div className="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8 py-3 sm:py-6">
         {/* Back Button */}
       <button
   onClick={() => router.back()}
@@ -211,26 +189,14 @@ function CarDetailsContent() {
 </button>
 
 
-        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
           {/* Left Column - Images and Details */}
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Image Gallery */}
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
               {/* Main Image */}
               <div className="relative bg-gradient-to-br from-blue-400 to-blue-600 h-64 sm:h-80 lg:h-96 flex items-center justify-center">
-                {/* Favorite and Share Buttons */}
-                {/* <div className="absolute top-4 right-4 flex gap-2 z-10">
-                  <button className="bg-white/90 hover:bg-white p-2 rounded-full shadow-lg">
-                    <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                    </svg>
-                  </button>
-                  <button className="bg-white/90 hover:bg-white p-2 rounded-full shadow-lg">
-                    <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                    </svg>
-                  </button>
-                </div> */}
+              
 
                 {vehicleImages.length > 0 ? (
                   <>
@@ -294,22 +260,16 @@ function CarDetailsContent() {
             <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+                  <h1 className="lg:text-2xl text-lg font-semibold text-gray-900">
                     {vehicle.brand} {vehicle.model} 
                   </h1>
                   <p className="text-gray-600 mt-1">{vehicle.carName || vehicle.registrationNumber}</p>
                 </div>
-                {/* <div className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg">
-                  <span className="text-xl">★</span>
-                  <span className="font-bold">4.7</span>
-                  <span className="text-sm">(26)</span>
-                </div> */}
+             
               </div>
 
               <div className="flex gap-4 text-sm text-gray-600 mb-6">
-                {/* <span className="flex items-center gap-1">
-                  <span className="font-medium">Manual</span>
-                </span> */}
+               
                 <span>•</span>
                 <span className="flex items-center gap-1">
                   <span className="font-medium">{vehicle.fuelType || 'Petrol'}</span>
@@ -328,40 +288,7 @@ function CarDetailsContent() {
                 </div>
               )}
 
-              {/* Hosted By */}
-              {/* <div className="flex items-center gap-3 py-4 border-t border-gray-200">
-                <div className="w-12 h-12 rounded-full bg-green-600 flex items-center justify-center text-white font-bold text-lg">
-                  {vehicle.ownerName?.charAt(0) || 'H'}
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Hosted by</p>
-                  <p className="font-semibold text-gray-900">{vehicle.ownerName || 'M Vittal Kumar'}</p>
-                </div>
-              </div> */}
-
-              {/* Features */}
-              {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl mb-2">👥</div>
-                  <div className="text-xs text-gray-500">Seats</div>
-                  <div className="font-semibold">{vehicle.seatingCapacity || 5}</div>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl mb-2">⛽</div>
-                  <div className="text-xs text-gray-500">Fuel</div>
-                  <div className="font-semibold">{vehicle.fuelType || 'Petrol'}</div>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl mb-2">🎨</div>
-                  <div className="text-xs text-gray-500">Color</div>
-                  <div className="font-semibold">{vehicle.color || 'N/A'}</div>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <div className="text-2xl mb-2">🛡️</div>
-                  <div className="text-xs text-gray-500">Insurance</div>
-                  <div className="font-semibold">Included</div>
-                </div>
-              </div> */}
+            
 
               {/* Navigation Tabs */}
               <div className="mt-4 sm:mt-6 pt-4 sm:pt-6 border-t">
@@ -376,16 +303,7 @@ function CarDetailsContent() {
                   >
                     Location
                   </button>
-                  {/* <button
-                    onClick={() => scrollToSection(reviewsRef, 'reviews')}
-                    className={`pb-2 sm:pb-3 px-0.5 sm:px-1 text-xs sm:text-sm font-medium whitespace-nowrap transition-colors ${
-                      activeTab === 'reviews' 
-                        ? 'text-green-600 border-b-2 border-green-600' 
-                        : 'text-gray-600 hover:text-gray-900'
-                    }`}
-                  >
-                    Reviews
-                  </button> */}
+                 
                   {vehicle.features && vehicle.features.length > 0 && (
                     <button
                       onClick={() => scrollToSection(featuresRef, 'features')}
@@ -441,24 +359,14 @@ function CarDetailsContent() {
                       <div>
                         <p className="font-semibold text-gray-900">{vehicle.city}</p>
                         {vehicle.location && <p className="text-sm text-gray-600 mt-1">{vehicle.location}</p>}
-                        <p className="text-xs text-green-600 mt-2">0.0 Kms Away</p>
+                        {/* <p className="text-xs text-green-600 mt-2">0.0 Kms Away</p> */}
                       </div>
                     </div>
                   </div>
                 )}
               </div>
 
-              {/* Reviews Section */}
-              {/* <div ref={reviewsRef} className="mt-6 sm:mt-8 pt-4 sm:pt-6 border-t scroll-mt-24">
-                <h3 className="font-bold text-base sm:text-lg text-gray-900 mb-3 sm:mb-4">Ratings & Reviews</h3>
-                <div className="bg-gray-50 rounded-lg p-4 sm:p-6 text-center">
-                  <div className="text-yellow-500 text-2xl sm:text-3xl mb-2">★★★★★</div>
-                  <div className="text-xl sm:text-2xl font-bold text-gray-900 mb-1">5.0</div>
-                  <p className="text-sm text-gray-600">Based on customer reviews</p>
-                  <p className="text-xs text-gray-500 mt-4">Be the first to review this vehicle</p>
-                </div>
-              </div> */}
-
+       
               {/* Features Section */}
              {vehicle.features && vehicle.features.length > 0 && (
   <div ref={featuresRef} className="pt-6 scroll-mt-24">
@@ -582,50 +490,13 @@ function CarDetailsContent() {
               </div>
             </div>
 
-            {/* Reviews Section */}
-            {/* <div className="bg-white rounded-xl shadow-lg p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-gray-900">Reviews</h3>
-                <button className="text-green-600 hover:text-green-700 text-sm font-medium">
-                  9 Reviews
-                </button>
-              </div>
-              <div className="text-center py-8 text-gray-500">
-                <p>Customer reviews coming soon...</p>
-              </div>
-            </div> */}
+           
           </div>
 
           {/* Right Column - Booking Card */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 lg:sticky lg:top-24">
-              {/* Travel with Confidence Banner */}
-              {/* <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex-1">
-                    <div className="text-sm font-semibold text-gray-900 mb-1">Travel with confidence</div>
-                    <p className="text-xs text-gray-600">Your trip is secured against accidental damage</p>
-                    <button className="text-xs text-green-600 hover:text-green-700 mt-2 font-medium flex items-center gap-1">
-                      Learn More
-                      <span>→</span>
-                    </button>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-gray-900">₹{Math.round(pricePerDay * 0.15)}</div>
-                  </div>
-                </div>
-              </div> */}
-
-              {/* Discount Badge */}
-              {/* <div className="bg-white border-2 border-green-600 rounded-lg p-3 mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <div className="bg-green-600 text-white w-7 h-7 rounded flex items-center justify-center text-sm font-bold">
-                    Z
-                  </div>
-                  <span className="text-sm font-semibold text-green-800">Get 50% OFF!</span>
-                </div>
-                <button className="text-sm text-green-600 hover:text-green-700 font-semibold">Apply</button>
-              </div> */}
+              
 
               {/* Terms Checkbox */}
               <div className="mb-4 sm:mb-6">
@@ -676,13 +547,16 @@ function CarDetailsContent() {
               </div>
 
               {/* Book Button */}
-              <button
-                onClick={handleProceedToBooking}
-                disabled={!agreeToTerms || !bookingData.checkIn}
-                className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-base"
-              >
-                 Proceed to Booking
-              </button>
+              <div className="">
+                <button
+                  onClick={handleProceedToBooking}
+                  disabled={!agreeToTerms}
+                  title={!agreeToTerms ? 'Please agree to terms to proceed' : (!bookingData.checkIn ? 'Select trip dates to continue' : 'Proceed to booking')}
+                  className="w-full bg-green-600 hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-bold py-3 sm:py-4 rounded-lg transition-colors text-sm sm:text-base"
+                >
+                   Proceed to Booking
+                </button>
+              </div>
             </div>
           </div>
         </div>

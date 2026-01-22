@@ -251,7 +251,7 @@ function Page() {
       City
     </label>
     <select
-      className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+      className="w-full px-4 py-3 border border-gray-300 text-slate-600 rounded-md focus:ring-2 focus:ring-teal-500"
       value={formData.city}
       onChange={(e) =>
         setFormData({ ...formData, city: e.target.value })
@@ -278,7 +278,7 @@ function Page() {
     <input
       type="text"
       placeholder="Enter pickup location"
-      className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+      className="w-full px-4 py-3 border border-gray-300 text-slate-600 rounded-md focus:ring-2 focus:ring-teal-500"
       value={formData.location}
       onChange={(e) =>
         setFormData({ ...formData, location: e.target.value })
@@ -294,7 +294,7 @@ function Page() {
       </label>
       <input
         type="date"
-        className="w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500"
+        className="w-full px-4 py-3 border border-gray-300 text-slate-600 rounded-md focus:ring-2 focus:ring-teal-500"
         value={formData.tripStart}
         onChange={(e) =>
           setFormData({
@@ -438,7 +438,7 @@ function Page() {
             <span className="inline-block bg-gradient-to-r from-green-600 to-green-700 text-white px-6 py-2 rounded-full text-sm  mb-4">
               FEATURED VEHICLES
             </span>
-            <h2 className="text-xl md:text-3xl mb-4">
+            <h2 className="text-xl text-black md:text-3xl mb-4">
               Top Cars in Bangalore         
               </h2>
             <p className="text-gray-600 text-base max-w-2xl mx-auto">

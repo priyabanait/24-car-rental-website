@@ -344,7 +344,7 @@ function CartContent() {
                       <input
                         type="text"
                         required
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-4 py-3 border-2 border-gray-300 text-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         placeholder="Enter city"
                         value={bookingData.city}
                         onChange={(e) => setBookingData({...bookingData, city: e.target.value})}
@@ -357,7 +357,7 @@ function CartContent() {
                       <input
                         type="text"
                         required
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-4 py-3 border-2 border-gray-300 text-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         placeholder="Enter pickup address"
                         value={bookingData.pickupLocation}
                         onChange={(e) => setBookingData({...bookingData, pickupLocation: e.target.value})}
@@ -374,7 +374,7 @@ function CartContent() {
                         type="date"
                         required
                         min={new Date().toISOString().split('T')[0]}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-4 py-3 border-2 border-gray-300 text-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         value={bookingData.tripStartDate}
                         onChange={(e) => setBookingData({...bookingData, tripStartDate: e.target.value})}
                       />

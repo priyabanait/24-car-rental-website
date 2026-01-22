@@ -303,7 +303,7 @@ function PaymentContent() {
                         value={cardDetails.cardNumber}
                         onChange={handleCardNumberChange}
                         placeholder="1234 5678 9012 3456"
-                        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                        className="w-full px-4 py-3 border border-gray-300 text-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                       />
                     </div>
 
@@ -315,7 +315,7 @@ function PaymentContent() {
                           value={cardDetails.expiry}
                           onChange={handleExpiryChange}
                           placeholder="MM/YY"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                          className="w-full px-4 py-3 border border-gray-300 text-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         />
                       </div>
                       <div>
@@ -325,7 +325,7 @@ function PaymentContent() {
                           value={cardDetails.cvv}
                           onChange={handleCvvChange}
                           placeholder="123"
-                          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                          className="w-full px-4 py-3 border border-gray-300 text-slate-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
                         />
                       </div>
                     </div>

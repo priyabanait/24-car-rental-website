@@ -134,7 +134,7 @@ function CarsPageContent() {
             Category
           </label>
           <select
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+            className="w-full rounded-md border-gray-300 text-slate-600 shadow-sm focus:border-green-500 focus:ring-green-500"
             value={filters.category}
             onChange={(e) =>
               setFilters({ ...filters, category: e.target.value })
@@ -155,7 +155,7 @@ function CarsPageContent() {
             Fuel Type
           </label>
           <select
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+            className="w-full rounded-md border-gray-300 text-slate-600 shadow-sm focus:border-green-500 focus:ring-green-500"
             value={filters.fuelType}
             onChange={(e) =>
               setFilters({ ...filters, fuelType: e.target.value })
@@ -176,7 +176,7 @@ function CarsPageContent() {
             Seating Capacity
           </label>
           <select
-            className="w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
+            className="w-full rounded-md border-gray-300 text-slate-600 shadow-sm focus:border-green-500 focus:ring-green-500"
             value={filters.seatingCapacity}
             onChange={(e) =>
               setFilters({ ...filters, seatingCapacity: e.target.value })

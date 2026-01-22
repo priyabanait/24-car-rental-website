@@ -134,23 +134,23 @@ const AuthForm = () => {
         </div>
         <div className="p-4 sm:p-6 md:p-8 flex flex-col justify-around bg-white">
           <form className="max-w-[400px] w-full mx-auto">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-center py-2 sm:py-4">Welcome to <br></br> 24-Car Rental</h2>
-            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-center py-2 sm:py-4">{!action ? "Sign Up" : "Login"}</h2>
+            <h2 className="text-2xl sm:text-3xl md:text-4xl text-black font-bold text-center py-2 sm:py-4">Welcome to <br></br> 24-Car Rental</h2>
+            <h2 className="text-xl sm:text-2xl md:text-3xl text-black font-bold text-center py-2 sm:py-4">{!action ? "Sign Up" : "Login"}</h2>
 
             {!action && (
               <div className="flex flex-col mb-3 sm:mb-4">
-                <input placeholder="Full Name" ref={nameRef} className="border relative bg-gray-100 p-2 text-sm sm:text-base rounded" type="text" required />
+                <input placeholder="Full Name" ref={nameRef} className="border relative bg-gray-100 text-slate-600 p-2 text-sm sm:text-base rounded" type="text" required />
               </div>
             )}
             <div className="flex flex-col mb-3 sm:mb-4">
-              <input placeholder="Mobile Number" ref={mobileRef} className="border relative bg-gray-100 p-2 text-sm sm:text-base rounded" type="tel" />
+              <input placeholder="Mobile Number" ref={mobileRef} className="border relative bg-gray-100 p-2 text-sm sm:text-base text-slate-600 rounded" type="tel" />
             </div>
             <div className="flex flex-col mb-3 sm:mb-4">
-              <input placeholder="Password" ref={passwordRef} className="border relative bg-gray-100 p-2 text-sm sm:text-base rounded" type="password" />
+              <input placeholder="Password" ref={passwordRef} className="border relative bg-gray-100 text-slate-600 p-2 text-sm sm:text-base rounded" type="password" />
             </div>
             {!action && (
               <div className="flex flex-col mb-3 sm:mb-4">
-                <input placeholder="Confirm password" ref={confirmPasswordRef} className="border relative bg-gray-100 p-2 text-sm sm:text-base rounded" type="password" />
+                <input placeholder="Confirm password" ref={confirmPasswordRef} className="border relative bg-gray-100 text-slate-600 p-2 text-sm sm:text-base rounded" type="password" />
               </div>
             )}
             <button onClick={submitHandler} className="w-full text-base sm:text-lg py-2 sm:py-3 mt-4 sm:mt-8 bg-indigo-600 hover:bg-indigo-500 relative text-white rounded transition">
